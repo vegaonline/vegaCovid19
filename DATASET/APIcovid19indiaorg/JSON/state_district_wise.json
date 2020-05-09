@@ -6327,4 +6327,355 @@
     },
     "statecode": "WB"
   }
+}       "recovered": 0
+        }
+      },
+      "Nainital": {
+        "notes": "",
+        "active": 2,
+        "confirmed": 10,
+        "deceased": 0,
+        "recovered": 8,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Pauri Garhwal": {
+        "notes": "",
+        "active": 0,
+        "confirmed": 1,
+        "deceased": 0,
+        "recovered": 1,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Udham Singh Nagar": {
+        "notes": "",
+        "active": 4,
+        "confirmed": 8,
+        "deceased": 0,
+        "recovered": 4,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      }
+    },
+    "statecode": "UT"
+  },
+  "West Bengal": {
+    "districtData": {
+      "Birbhum": {
+        "notes": "",
+        "active": 6,
+        "confirmed": 6,
+        "deceased": 0,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 3,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Darjeeling": {
+        "notes": "",
+        "active": 1,
+        "confirmed": 7,
+        "deceased": 1,
+        "recovered": 5,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Hooghly": {
+        "notes": "",
+        "active": 36,
+        "confirmed": 49,
+        "deceased": 4,
+        "recovered": 9,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Howrah": {
+        "notes": "",
+        "active": 282,
+        "confirmed": 324,
+        "deceased": 19,
+        "recovered": 23,
+        "delta": {
+          "confirmed": 35,
+          "deceased": 0,
+          "recovered": 1
+        }
+      },
+      "Jalpaiguri": {
+        "notes": "",
+        "active": 0,
+        "confirmed": 4,
+        "deceased": 0,
+        "recovered": 4,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Kalimpong": {
+        "notes": "",
+        "active": 0,
+        "confirmed": 7,
+        "deceased": 1,
+        "recovered": 6,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Kolkata": {
+        "notes": "",
+        "active": 535,
+        "confirmed": 783,
+        "deceased": 99,
+        "recovered": 149,
+        "delta": {
+          "confirmed": 29,
+          "deceased": 5,
+          "recovered": 13
+        }
+      },
+      "Malda": {
+        "notes": "",
+        "active": 3,
+        "confirmed": 3,
+        "deceased": 0,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 1,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Murshidabad": {
+        "notes": "",
+        "active": 0,
+        "confirmed": 1,
+        "deceased": 1,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Nadia": {
+        "notes": "",
+        "active": 0,
+        "confirmed": 8,
+        "deceased": 0,
+        "recovered": 8,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 2
+        }
+      },
+      "North 24 Parganas": {
+        "notes": "",
+        "active": 151,
+        "confirmed": 220,
+        "deceased": 21,
+        "recovered": 48,
+        "delta": {
+          "confirmed": 18,
+          "deceased": 2,
+          "recovered": 10
+        }
+      },
+      "Other State": {
+        "notes": "",
+        "active": 13,
+        "confirmed": 14,
+        "deceased": 1,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 3,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Paschim Bardhaman": {
+        "notes": "",
+        "active": 3,
+        "confirmed": 11,
+        "deceased": 2,
+        "recovered": 6,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 3
+        }
+      },
+      "Paschim Medinipur": {
+        "notes": "",
+        "active": 14,
+        "confirmed": 17,
+        "deceased": 0,
+        "recovered": 3,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Purba Bardhaman": {
+        "notes": "",
+        "active": 2,
+        "confirmed": 4,
+        "deceased": 0,
+        "recovered": 2,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 2
+        }
+      },
+      "Purba Medinipur": {
+        "notes": "",
+        "active": 15,
+        "confirmed": 39,
+        "deceased": 1,
+        "recovered": 23,
+        "delta": {
+          "confirmed": 1,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "South 24 Parganas": {
+        "notes": "",
+        "active": 40,
+        "confirmed": 51,
+        "deceased": 1,
+        "recovered": 10,
+        "delta": {
+          "confirmed": 2,
+          "deceased": 0,
+          "recovered": 0
+        }
+      }
+    },
+    "statecode": "WB"
+  }
+}ur": {
+        "notes": "",
+        "active": 15,
+        "confirmed": 39,
+        "deceased": 1,
+        "recovered": 23,
+        "delta": {
+          "confirmed": 1,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "South 24 Parganas": {
+        "notes": "",
+        "active": 40,
+        "confirmed": 51,
+        "deceased": 1,
+        "recovered": 10,
+        "delta": {
+          "confirmed": 2,
+          "deceased": 0,
+          "recovered": 0
+        }
+      }
+    },
+    "statecode": "WB"
+  }
+}   "active": 13,
+        "confirmed": 14,
+        "deceased": 1,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Paschim Bardhaman": {
+        "notes": "",
+        "active": 4,
+        "confirmed": 12,
+        "deceased": 2,
+        "recovered": 6,
+        "delta": {
+          "confirmed": 1,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Paschim Medinipur": {
+        "notes": "",
+        "active": 14,
+        "confirmed": 17,
+        "deceased": 0,
+        "recovered": 3,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Purba Bardhaman": {
+        "notes": "",
+        "active": 3,
+        "confirmed": 5,
+        "deceased": 0,
+        "recovered": 2,
+        "delta": {
+          "confirmed": 1,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Purba Medinipur": {
+        "notes": "",
+        "active": 20,
+        "confirmed": 44,
+        "deceased": 1,
+        "recovered": 23,
+        "delta": {
+          "confirmed": 5,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "South 24 Parganas": {
+        "notes": "",
+        "active": 43,
+        "confirmed": 55,
+        "deceased": 1,
+        "recovered": 11,
+        "delta": {
+          "confirmed": 4,
+          "deceased": 0,
+          "recovered": 1
+        }
+      }
+    },
+    "statecode": "WB"
+  }
 }

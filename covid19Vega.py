@@ -16,6 +16,7 @@ Created on Tue May  5 12:00:41 2020
 """
 
 import sys
+import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,6 +59,135 @@ def plot_params(ax,axis_label= None, plt_title = None,label_size=15, axis_fsize 
     # Plot Axes Labels
     xl = plt.xlabel(axis_label[0],fontsize = axis_fsize)
     yl = plt.ylabel(axis_label[1],fontsize = axis_fsize)
+    
+
+# This routine plots global data for Confirmed, Deceased and Recovered cases    
+def plotGlobalFig(thisdFrame, threshold = None, gType = None):   #, thisfigure = None):
+    
+    f = plt.figure(figsize=(12, 10))    #(10,12))
+    # Sub plot
+    ax = f.add_subplot(111)
+        
+    #    myFig = plt.figure(figsize = (12, 10))
+
+    maxDays = 0
+    for i, Country in enumerate(thisdFrame.index):
+        gTSTT = thisdFrame.loc[thisdFrame.index == Country].values[0]
+        gTSTT = gTSTT[gTSTT > threshold]  #[:days]
+        numDays = np.arange(0, len(gTSTT))   #[:days]))
+        if (len(numDays) !=0):
+            maxDays = max(maxDays, max(numDays))
+
+    days = maxDays # maxDays is max number comparing all countries       # old try: 60
+    for i, Country in enumerate(thisdFrame.index):
+        #if Country == "China":
+            #    continue
+        if (i >= 9):
+            if (Country != "India" and Country != "China"):
+                continue
+        gTST1 = thisdFrame.loc[thisdFrame.index == Country].values[0]
+        gTST1 = gTST1[gTST1 > threshold][:days]
+        dateConf = np.arange(0, len(gTST1[:days]))    
+        #lenGTST1 = len(gTST1)
+        
+        xnew = np.linspace(dateConf.min(), dateConf.max(), days)  # maxDays was 30
+        spl = make_interp_spline(dateConf, gTST1, k = 1)
+        power_smooth = spl(xnew)
+        testCountry = Country + ":  " + str(gTST1[-1])
+        
+        if Country != "India":
+            plt.plot(xnew, power_smooth, '-o', label = testCountry, linewidth = 3, markevery = [-1])
+        else:
+            marker_style = dict(linewidth = 3, linestyle = '-', marker = 'o', markersize = 8, markerfacecolor = '#ffffff')
+            plt.plot(dateConf, gTST1, "-.", label = testCountry, **marker_style)
+
+    plt.tick_params(labelsize = 12)        
+    plt.xticks(np.arange(0, days, 7), [ "Day " + str(i) for i in range(days)][::7])    
+    plt.xticks(rotation = 70) 
+
+    # Reference lines 
+    x = np.arange(0, 15)
+    y = 2**(x + np.log2(threshold))
+    plt.plot(x, y, "--", linewidth =2, color = "gray")
+    plt.annotate("No. of cases doubles every day", (x[-2], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+
+    x = np.arange(0, int(days / 4))      # int(dateConf - 10))    #26)                                   # int(days - 12))
+    y = 2**(x / 2 + np.log2(threshold))
+    plt.plot(x, y, "--", linewidth = 2, color = "gray")
+    plt.annotate(".. every second day", (x[-3], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+
+    x = np.arange(0, int(days / 2))      # int(dateConf - 10))     # 26)                                   # int(days - 5))
+    y = 2**(x / 4 + np.log2(threshold))
+    plt.plot(x, y, "--", linewidth = 2, color = "Red")
+    plt.annotate(".. every 4 days", (x[-3], y[-1]), color = "Red", xycoords = "data", fontsize = 12, alpha = 0.8)
+
+    x = np.arange(0, days - 20)      # int(dateConf - 10))      #26)                                   # int(days - 4))
+    y = 2**(x / 7 + np.log2(threshold))
+    plt.plot(x, y, "--", linewidth = 2, color = "red")
+    plt.annotate(".. every week", (x[-3], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+
+    x = np.arange(0, int(days / 2))     # int(dateConf - 10))      #26)                                   # int(days - 4))
+    y = 2**(x / 30 + np.log2(threshold))
+    plt.plot(x, y, "--", linewidth = 2, color = "gray")
+    plt.annotate(".. every month", (x[-15], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+ 
+    # plot Params
+    plt.xlabel("Days",fontsize = 17)
+    str1 = "Number of " + gType + " Cases"
+    str2 = "Trend Comparison of Different Countries\n and India (" + gType + ")"   
+    plt.text(20, 90, "Data taken from CSSEGIandData at John Hopkins U.", {'color':'g', 'fontsize':9, 'ha':'left','va':'center','bbox': dict(boxstyle="round", fc="white", ec="black", pad=0.2)})
+    plt.text(20, 70, "Analysis and plotting by  Abhijit Bhattacharyya, NPD, BARC", {'color':'r', 'fontsize':9, 'ha':'left','va':'center','bbox': dict(boxstyle="round", fc="white", ec="black", pad=0.2)})
+    
+    plt.ylabel(str1, fontsize = 17)
+    plt.title(str2, fontsize = 22)
+    plt.legend(loc = 0)    #"upper left")
+    plt.yscale("log")
+    plt.grid(which = "both")
+    
+    
+def visualize_covid_cases(confirmed, deaths, continent=None , country = None , state = None, period = None, figure = None, scale = "linear"):
+    x = 0
+    if figure == None:
+        f = plt.figure(figsize=(10,10))
+        # Sub plot
+        ax = f.add_subplot(111)
+    else :
+        f = figure[0]
+        # Sub plot
+        ax = f.add_subplot(figure[1],figure[2],figure[3])
+    ax.set_axisbelow(True)
+    plt.tight_layout(pad=10, w_pad=5, h_pad=5)
+    
+    stats = [confirmed, deaths]
+    label = ["Confirmed", "Deaths"]
+    
+    if continent != None:
+        params = ["Continent",continent]
+    elif country != None:
+        params = ["Country",country]
+    else: 
+        params = ["All", "All"]
+    color = ["darkcyan","crimson"]
+    marker_style = dict(linewidth=3, linestyle='-', marker='o',markersize=4, markerfacecolor='#ffffff')
+    for i,stat in enumerate(stats):
+        if params[1] == "All" :
+            cases = np.sum(np.asarray(stat.iloc[:,5:]),axis = 0)[x:]
+        else :
+            cases = np.sum(np.asarray(stat[stat[params[0]] == params[1]].iloc[:,5:]),axis = 0)[x:]
+        date = np.arange(1,cases.shape[0]+1)[x:]
+        plt.plot(date,cases,label = label[i]+" (Total : "+str(cases[-1])+")",color=color[i],**marker_style)
+        plt.fill_between(date,cases,color=color[i],alpha=0.3)
+
+    if params[1] == "All" :
+        Total_confirmed = np.sum(np.asarray(stats[0].iloc[:,5:]),axis = 0)[x:]
+        Total_deaths = np.sum(np.asarray(stats[1].iloc[:,5:]),axis = 0)[x:]
+    else :
+        Total_confirmed =  np.sum(np.asarray(stats[0][stat[params[0]] == params[1]].iloc[:,5:]),axis = 0)[x:]
+        Total_deaths = np.sum(np.asarray(stats[1][stat[params[0]] == params[1]].iloc[:,5:]),axis = 0)[x:]
+        
+    if figure == None:
+        plt.show()
+    #plt.show()
     
     
 def visualize_covid_cases(confirmed, deaths, continent=None , country = None , state = None, period = None, figure = None, scale = "linear"):
@@ -161,6 +291,7 @@ def dd(date1,date2):
 
 
 out = ""#+"output/"
+cmdParser = argparse.ArgumentParser()
 
 #<-------------------------------------------------------------------->
 
@@ -190,7 +321,6 @@ gTSRDF = pd.read_csv(globalTSR, parse_dates=True)
 iCDF1 = pd.read_csv(indiaRaw1, index_col = 1, parse_dates=True)
 iCDF2 = pd.read_csv(indiaRaw2, index_col = 1, parse_dates=True)
 iCDF3 = pd.read_csv(indiaRaw3, index_col = 1, parse_dates=True)   #Raw3 is not matched with Raw1, Raw2
-
 iDRDF1 = pd.read_csv(indiaDR1, index_col = 1, parse_dates=True)
 iDRDF1.insert(iDRDF1.shape[1], "Unnamed: 15", '')
 iDRDF2 = pd.read_csv(indiaDR2, index_col = 1, parse_dates=True)
@@ -203,6 +333,9 @@ gTSDDF = gTSDDF.replace(np.nan, '', regex=True)     # Global Deceased Cases
 gTSDDF = gTSDDF.rename(columns={"Province/State" : "State", "Country/Region" : "Country"})
 gTSRDF = gTSRDF.replace(np.nan, '', regex=True)     # Global Recovered Cases
 gTSRDF = gTSRDF.rename(columns={"Province/State" : "State", "Country/Region" : "Country"})
+gCDF_country = gTSCDF.groupby(['Country']).sum()
+gDDF_country = gTSDDF.groupby(['Country']).sum()
+gRDF_country = gTSRDF.groupby(['Country']).sum()
 
 iCDF3.insert(2, "dummy", 0)  # this treatment is required as the data RAW3 is not organized at par with RAW1/2
 iCDF31 = iCDF3[iCDF3.columns[[19, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 11, 16, 17, 18, 13, 14, 15, 9]]]
@@ -216,152 +349,75 @@ iRDF = iDRDF.query('Patient_Status == "Recovered"')  # recovered dataset
 iDDF = iDRDF.query('Patient_Status == "Deceased"')   # Deceased dataset
 
 
-# start analysis with JHU data 
+#--------------------------------------------------------------------------------------------------------------------
+# Check command line arguments for analysis
+opt1 = opt2 = opt3 = opt4 = opt5 = 0
+if (((len(sys.argv) > 1) and (sys.argv[1] == '-h')) or (len(sys.argv) == 1)):
+    print("Command : python ./covid19Vega.py -o=opt1, opt2, opt3,... ")
+    print(" opt1 : 0 | 1 to switch global Report from JHU Data ")
+    print(" opt2 : 0 | 1 to switch Trend of Confirmed Global report from JHU Data. ")
+    print(" opt3 : 0 | 1 to switch Trend of Deceased Global report from JHU Data.")
+    print(" opt4 : 0 | 1 to switch Trend of Recovered Global report from JHU Data.")
+    print(" opt5 : 0 | 1 to switch Study of Indian report from api.covid19india.org Data.")
+    if (len(sys.argv) == 1):
+        print("....... Please run again with options.")
+    print(" Code terminated without any further job.....")
+    sys.exit(0)
+    
+if (len(sys.argv) > 1):
+    cmdParser.add_argument('-o', type = str)
+    cmdArguments = cmdParser.parse_args()
+    optList = cmdArguments.o.split(',')
+    opt1 = int(optList[0])
+    opt2 = int(optList[1])
+    opt3 = int(optList[2])
+    opt4 = int(optList[3])
+    opt5 = int(optList[4])
+
 
 #----------------------------------------------------------------------------------------------------------------------------
+# start analysis with JHU data 
 # Spread Trends in few affected Countries
-gCDF_Countr = gTSCDF.groupby(["Country"]).sum()
-gCDF_Countr = gCDF_Countr.sort_values(gCDF_Countr.columns[-1], ascending = False)
-lCountries = gCDF_Countr[gCDF_Countr[gCDF_Countr.columns[-1]] >= 4000].index
-cols = 2
-rows = int(np.ceil(lCountries.shape[0]/cols))
-myFig = plt.figure(figsize = (18, 7 * rows))
-for i, iCountry in enumerate(lCountries):
-    visualize_covid_cases(gTSCDF, gTSDDF, country = iCountry, figure = [myFig, rows, cols, i + 1])
 
-plt.savefig(out+'PLOT/Global_Report.png')    
-plt.show()
-
+if (opt1 == 1):
+    #print("opt1 \n")
+    gCDF_Countr = gCDF_country.sort_values(gCDF_country.columns[-1], ascending = False)
+    lCountries = gCDF_Countr[gCDF_Countr[gCDF_Countr.columns[-1]] >= 4000].index
+    cols = 2
+    rows = int(np.ceil(lCountries.shape[0] / cols))
+    myFig = plt.figure(figsize = (18, 7 * rows))
+    for i, iCountry in enumerate(lCountries):
+        visualize_covid_cases(gTSCDF, gTSDDF, country = iCountry, figure = [myFig, rows, cols, i + 1])
+    plt.savefig(out+'PLOT/Global_Report.png')    
+    #plt.show()
 
 #------------------------------------------------------------------------------------------------------------------------
 # Trend comparison for Confirmed Cases
-gTSTMPC = gTSCDF.groupby('Country').sum().drop(["Lat", "Long"], axis=1).sort_values(gTSCDF.columns[-1], ascending=False)
-
-threshold = 50
-nLast = 0
-dLast = ''
-myCountry = ''
-f = plt.figure(figsize=(10,12))
-ax = f.add_subplot(111)
-for i, Country in enumerate(gTSTMPC.index):
-    if i >= 9:
-        if Country != "India" and Country != "Japan":
-            continue
-    days = 60
-    gTST1 = gTSTMPC.loc[gTSTMPC.index == Country].values[0]
-    gTST1 = gTST1[gTST1 > threshold][:days]
-    date = np.arange(0, len(gTST1[:days]))
-    if Country == "India":
-        nLast = gTST1[-1]
-        dLast = date.max()
-        myCountry = Country
-    xnew = np.linspace(date.min(), date.max(), 30)
-    spl = make_interp_spline(date, gTST1, k = 1)
-    power_smooth = spl(xnew)
-    if Country != "India":
-        plt.plot(xnew, power_smooth, '-o', label = Country, linewidth = 3, markevery = [-1])
-    else:
-        marker_style = dict(linewidth = 4, linestyle = '-', marker = 'o', markersize = 10, markerfacecolor = '#ffffff')
-        plt.plot(date, gTST1, "-.", label = Country, **marker_style)
-
-print("Date: ", dLast, "Country: ", myCountry, "  Num: ", nLast, "\n");
-plt.tick_params(labelsize = 14)        
-plt.xticks(np.arange(0, days, 7), [ "Day " + str(i) for i in range(days)][::7])     
-
-# Reference lines 
-x = np.arange(0, 18)
-y = 2**(x + np.log2(threshold))
-plt.plot(x, y, "--", linewidth =2, color = "gray")
-plt.annotate("No. of cases doubles every day", (x[-2], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
-
-x = np.arange(0, int(days - 12))
-y = 2**(x / 2 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "gray")
-plt.annotate(".. every second day", (x[-3], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
-
-x = np.arange(0, int(days - 4))
-y = 2**(x / 7 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "gray")
-plt.annotate(".. every week", (x[-3], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
-
-x = np.arange(0, int(days - 4))
-y = 2**(x / 30 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "gray")
-plt.annotate(".. every month", (x[-3], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
- 
-x = np.arange(0, int(days - 5))
-y = 2**(x / 4 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "Red")
-plt.annotate(".. every 4 days", (x[-3], y[-1]), color = "Red", xycoords = "data", fontsize = 14, alpha = 0.8)
-
-# plot Params
-plt.xlabel("Days",fontsize = 17)
-plt.ylabel("Number of Confirmed Cases",fontsize = 17)
-plt.title("Trend Comparison of Different Countries\n and India (Confirmed) ",fontsize = 22)
-plt.legend(loc = "upper left")
-plt.yscale("log")
-plt.grid(which = "both")
-plt.savefig(out+'PLOT/Trend_Comparison_with_India_Confirmed.png')
-plt.show()
-
+if (opt2 == 1):
+    #print("opt2 \n")
+    gTSTMPC = gCDF_country.drop(["Lat", "Long"], axis=1).sort_values(gTSCDF.columns[-1], ascending=False)
+    # myFig = plt.figure(figsize = (12, 10))
+    threshold = 100    # reports count more than 100 active
+    plotGlobalFig(gTSTMPC, threshold, "Confirmed" )  #, [myFig])  # figure = [myFig ])
+    plt.savefig(out+'PLOT/Trend_Comparison_with_India_Confirmed_JHU-Data.png')
+    #plt.show()
 
 # Trend comparison for Deceased  Cases
-gTSTMPD = gTSDDF.groupby('Country').sum().drop(["Lat", "Long"], axis=1).sort_values(gTSDDF.columns[-1], ascending=False)
-threshold = 50
-f = plt.figure(figsize=(10,12))
-ax = f.add_subplot(111)
-for i, Country in enumerate(gTSTMPD.index):
-    if i >= 9:
-        if Country != "India" and Country != "Japan":
-            continue
-    days = 60
-    gTST2 = gTSTMPD.loc[gTSTMPD.index == Country].values[0]
-    gTST2 = gTST2[gTST2 > threshold][:days]
-    date = np.arange(0, len(gTST2[:days]))
-    xnew = np.linspace(date.min(), date.max(), 30)
-    spl = make_interp_spline(date, gTST2, k = 1)
-    power_smooth = spl(xnew)
-    if Country != "India":
-        plt.plot(xnew, power_smooth, '-o', label = Country, linewidth = 3, markevery = [-1])
-    else:
-        marker_style = dict(linewidth = 4, linestyle = '-', marker = 'o', markersize = 10, markerfacecolor = '#ffffff')
-        plt.plot(date, gTST2, "-.", label = Country, **marker_style)
+if (opt3 == 1):
+    #print("opt3 \n")
+    gTSTMPD = gDDF_country.drop(["Lat", "Long"], axis=1).sort_values(gTSDDF.columns[-1], ascending=False)
+    # myFig = plt.figure(figsize = (12, 10))
+    threshold = 100    # reports count more than 100 active
+    plotGlobalFig(gTSTMPD, threshold, "Deceased")      #, figure = [myFig ])
+    plt.savefig(out+'PLOT/Trend_Comparison_with_India_Deceased_JHU-Data.png')
+    #plt.show()
 
-plt.tick_params(labelsize = 14)        
-plt.xticks(np.arange(0, days, 7), [ "Day " + str(i) for i in range(days)][::7])     
-
-# Reference lines 
-x = np.arange(0, 18)
-y = 2**(x + np.log2(threshold))
-plt.plot(x, y, "--", linewidth =2, color = "gray")
-plt.annotate("No. of cases doubles every day", (x[-2], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
-
-x = np.arange(0, int(days - 12))
-y = 2**(x / 2 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "gray")
-plt.annotate(".. every second day", (x[-3], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
-
-x = np.arange(0, int(days - 4))
-y = 2**(x / 7 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "gray")
-plt.annotate(".. every week", (x[-3], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
-
-x = np.arange(0, int(days - 4))
-y = 2**(x / 30 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "gray")
-plt.annotate(".. every month", (x[-3], y[-1]), xycoords = "data", fontsize = 14, alpha = 0.5)
- 
-x = np.arange(0, int(days - 5))
-y = 2**(x / 4 + np.log2(threshold))
-plt.plot(x, y, "--", linewidth = 2, color = "Red")
-plt.annotate(".. every 4 days", (x[-3], y[-1]), color = "Red", xycoords = "data", fontsize = 14, alpha = 0.8)
-
-# plot Params
-plt.xlabel("Days",fontsize = 17)
-plt.ylabel("Number of Deceased Cases",fontsize = 17)
-plt.title("Trend Comparison of Different Countries\n and India (Deceased) ",fontsize = 22)
-plt.legend(loc = "upper left")
-plt.yscale("log")
-plt.grid(which = "both")
-plt.savefig(out+'PLOT/Trend_Comparison_with_India_Deceased.png')
-plt.show()
+# Trend comparison for Recovered  Cases
+if (opt4 == 1):
+    #print("opt4 \n")
+    gTSTMPR = gRDF_country.drop(["Lat", "Long"], axis=1).sort_values(gTSRDF.columns[-1], ascending=False)
+    # myFig = plt.figure(figsize = (12, 10))
+    threshold = 100    # reports count more than 100 active
+    plotGlobalFig(gTSTMPR, threshold, "Recovered")          #, figure = [myFig ])
+    plt.savefig(out+'PLOT/Trend_Comparison_with_India_Recovered_JHU-Data.png')
+    #plt.show()
