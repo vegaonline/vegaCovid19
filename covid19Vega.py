@@ -16,10 +16,14 @@ Created on Tue May  5 12:00:41 2020
 """
 
 import sys
+import gc
 import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+from mpl_toolkits.mplot3d import Axes3D
+from scipy.optimize import curve_fit
 from matplotlib import ticker
 import pycountry_convert as pc
 import folium
@@ -30,6 +34,8 @@ import plotly.express as px
 import glob, json, requests
 import calmap
 
+
+
 from keras.layers import Input, Dense, Activation, LeakyReLU
 from keras import models
 from keras.optimizers import RMSprop, Adam
@@ -38,6 +44,32 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # <------------------- FUNCTION DEFINITION ----------------------------->
+
+# Release Memory occupied by Dataframes
+def releaseMemory(globalList, indiaList):
+    del globalList
+    del indiaList
+    gc.collect()
+
+# Common plootting routine
+def vegaPlotRoutine(xx, yy, xlab, yLab, xxticks, xxticksRot, xloglin, yloglin, isGrid, strLeg, pltTitle):
+    print("In plotter routine")
+    
+    plt.plot(xx, yy, label = strLeg, linewidth = 1, marker = 'o', markersize = 4)            
+    plt.xticks(xxticks)        
+    plt.xticks(rotation = xxticksRot)
+    plt.yscale(yloglin)
+    plt.xscale(xloglin)
+    plt.grid(which = isGrid)
+    plt.xlabel(xlab, fontsize=14)
+    plt.ylabel(yLab, fontsize=14)
+    plt.title(pltTitle, fontsize=16)
+    plt.text(50, 1.2, "Data taken from CSSEGIandData at John Hopkins U.", {'color':'g', 'fontsize':9, 'ha':'left','va':'center','bbox': dict(boxstyle="round", fc="white", ec="black", pad=0.2)})
+    plt.text(50, 0.85, "Analysis and plotting by  Abhijit Bhattacharyya, NPD, BARC", {'color':'r', 'fontsize':9, 'ha':'left','va':'center','bbox': dict(boxstyle="round", fc="white", ec="black", pad=0.2)})
+    plt.legend(loc=0)
+    plt.show()
+
+
 def plot_params(ax,axis_label= None, plt_title = None,label_size=15, axis_fsize = 15, title_fsize = 20, scale = 'linear' ):
     # Tick-Parameters
     ax.xaxis.set_minor_locator(ticker.AutoMinorLocator())
@@ -66,40 +98,37 @@ def plotGlobalFig(thisdFrame, threshold = None, gType = None):   #, thisfigure =
     
     f = plt.figure(figsize=(12, 10))    #(10,12))
     # Sub plot
-    ax = f.add_subplot(111)
-        
+    ax = f.add_subplot(111)        
     #    myFig = plt.figure(figsize = (12, 10))
-
+        
     maxDays = 0
     for i, Country in enumerate(thisdFrame.index):
         gTSTT = thisdFrame.loc[thisdFrame.index == Country].values[0]
-        gTSTT = gTSTT[gTSTT > threshold]  #[:days]
+        gTSTT = gTSTT[gTSTT > threshold]  #[:days]        
         numDays = np.arange(0, len(gTSTT))   #[:days]))
-        if (len(numDays) !=0):
-            maxDays = max(maxDays, max(numDays))
-
+        lNDays = len(numDays)
+        if (lNDays !=0):
+            maxDays = max(maxDays, lNDays)                        
+    
     days = maxDays # maxDays is max number comparing all countries       # old try: 60
-    for i, Country in enumerate(thisdFrame.index):
-        #if Country == "China":
-            #    continue
-        if (i >= 9):
+    for j, Country in enumerate(thisdFrame.index):
+        if (j >= 9):
             if (Country != "India" and Country != "China"):
                 continue
-        gTST1 = thisdFrame.loc[thisdFrame.index == Country].values[0]
-        gTST1 = gTST1[gTST1 > threshold][:days]
-        dateConf = np.arange(0, len(gTST1[:days]))    
-        #lenGTST1 = len(gTST1)
-        
+        gTSTT = thisdFrame.loc[thisdFrame.index == Country].values[0]        
+        gTSTT = gTSTT[gTSTT > threshold][:days]        
+        dateConf = np.arange(0, len(gTSTT))
+                
         xnew = np.linspace(dateConf.min(), dateConf.max(), days)  # maxDays was 30
-        spl = make_interp_spline(dateConf, gTST1, k = 1)
+        spl = make_interp_spline(dateConf, gTSTT, k = 1)
         power_smooth = spl(xnew)
-        testCountry = Country + ":  " + str(gTST1[-1])
+        testCountry = Country + ":  " + str(gTSTT[-1])
         
         if Country != "India":
             plt.plot(xnew, power_smooth, '-o', label = testCountry, linewidth = 3, markevery = [-1])
         else:
             marker_style = dict(linewidth = 3, linestyle = '-', marker = 'o', markersize = 8, markerfacecolor = '#ffffff')
-            plt.plot(dateConf, gTST1, "-.", label = testCountry, **marker_style)
+            plt.plot(dateConf, gTSTT, "-.", label = testCountry, **marker_style)
 
     plt.tick_params(labelsize = 12)        
     plt.xticks(np.arange(0, days, 7), [ "Day " + str(i) for i in range(days)][::7])    
@@ -109,12 +138,12 @@ def plotGlobalFig(thisdFrame, threshold = None, gType = None):   #, thisfigure =
     x = np.arange(0, 15)
     y = 2**(x + np.log2(threshold))
     plt.plot(x, y, "--", linewidth =2, color = "gray")
-    plt.annotate("No. of cases doubles every day", (x[-2], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+    plt.annotate("No. of cases doubles every day", (x[-10], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
 
     x = np.arange(0, int(days / 4))      # int(dateConf - 10))    #26)                                   # int(days - 12))
     y = 2**(x / 2 + np.log2(threshold))
     plt.plot(x, y, "--", linewidth = 2, color = "gray")
-    plt.annotate(".. every second day", (x[-3], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+    plt.annotate(".. every second day", (x[-14], y[-3]), xycoords = "data", fontsize = 12, alpha = 0.5)
 
     x = np.arange(0, int(days / 2))      # int(dateConf - 10))     # 26)                                   # int(days - 5))
     y = 2**(x / 4 + np.log2(threshold))
@@ -123,8 +152,8 @@ def plotGlobalFig(thisdFrame, threshold = None, gType = None):   #, thisfigure =
 
     x = np.arange(0, days - 20)      # int(dateConf - 10))      #26)                                   # int(days - 4))
     y = 2**(x / 7 + np.log2(threshold))
-    plt.plot(x, y, "--", linewidth = 2, color = "red")
-    plt.annotate(".. every week", (x[-3], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+    plt.plot(x, y, "--", linewidth = 2, color = "Red")
+    plt.annotate(".. every week", (x[-3], y[-1]), color = "Red", xycoords = "data", fontsize = 12, alpha = 0.5)
 
     x = np.arange(0, int(days / 2))     # int(dateConf - 10))      #26)                                   # int(days - 4))
     y = 2**(x / 30 + np.log2(threshold))
@@ -293,6 +322,7 @@ def dd(date1,date2):
 out = ""#+"output/"
 cmdParser = argparse.ArgumentParser()
 
+
 #<-------------------------------------------------------------------->
 
 
@@ -312,18 +342,24 @@ indiaRaw3 = f'{root_path_IND_C}/raw_data3.csv'
 indiaDR1 = f'{root_path_IND_C}/death_and_recovered1.csv'
 indiaDR2 = f'{root_path_IND_C}/death_and_recovered2.csv'
 indiaState = f'{root_path_IND_C}/state_wise.csv'
+indiaStateDaily = f'{root_path_IND_C}/state_wise_daily.csv'
 indiaDist = f'{root_path_IND_C}/district_wise.csv'
+indiatimeSeries = f'{root_path_IND_C}/case_time_series_1.csv'
 
 #Load data file
 gTSCDF = pd.read_csv(globalTSC, parse_dates=True)
 gTSDDF = pd.read_csv(globalTSD, parse_dates=True)
 gTSRDF = pd.read_csv(globalTSR, parse_dates=True)
-iCDF1 = pd.read_csv(indiaRaw1, index_col = 1, parse_dates=True)
-iCDF2 = pd.read_csv(indiaRaw2, index_col = 1, parse_dates=True)
-iCDF3 = pd.read_csv(indiaRaw3, index_col = 1, parse_dates=True)   #Raw3 is not matched with Raw1, Raw2
-iDRDF1 = pd.read_csv(indiaDR1, index_col = 1, parse_dates=True)
+iCDF1 = pd.read_csv(indiaRaw1, index_col = None, parse_dates=True)
+iCDF2 = pd.read_csv(indiaRaw2, index_col = None, parse_dates=True)
+iCDF3 = pd.read_csv(indiaRaw3, index_col = None, parse_dates=True)   #Raw3 is not matched with Raw1, Raw2
+iDRDF1 = pd.read_csv(indiaDR1, index_col = None, parse_dates=True)
 iDRDF1.insert(iDRDF1.shape[1], "Unnamed: 15", '')
-iDRDF2 = pd.read_csv(indiaDR2, index_col = 1, parse_dates=True)
+iDRDF2 = pd.read_csv(indiaDR2, index_col = None, parse_dates=True)
+iTSDF = pd.read_csv(indiatimeSeries, index_col=None, parse_dates=True)   #case time series data
+iDISTDF = pd.read_csv(indiaDist, index_col=1, parse_dates=True)
+iSTDF = pd.read_csv(indiaState, index_col=None, parse_dates=True)
+iSTDDF = pd.read_csv(indiaStateDaily, index_col=None, parse_dates=True)
 
 
 # Preprocessing of data
@@ -337,6 +373,10 @@ gCDF_country = gTSCDF.groupby(['Country']).sum()
 gDDF_country = gTSDDF.groupby(['Country']).sum()
 gRDF_country = gTSRDF.groupby(['Country']).sum()
 
+gCDF_Day_Ind = gCDF_country.query('Country == "India"')
+gDDF_Day_Ind = gDDF_country.query('Country == "India"')
+gRDF_Day_Ind = gRDF_country.query('Country == "India"')
+
 iCDF3.insert(2, "dummy", 0)  # this treatment is required as the data RAW3 is not organized at par with RAW1/2
 iCDF31 = iCDF3[iCDF3.columns[[19, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 11, 16, 17, 18, 13, 14, 15, 9]]]
 iCDF = (iCDF1.append(iCDF2)).append(iCDF31)
@@ -347,18 +387,31 @@ iDRDF = iDRDF.rename(columns={"Patient Number" : "PID", "Age Bracket" : "Age", "
 iDRDF = iDRDF.drop('Unnamed: 15', axis=1)
 iRDF = iDRDF.query('Patient_Status == "Recovered"')  # recovered dataset
 iDDF = iDRDF.query('Patient_Status == "Deceased"')   # Deceased dataset
+iTSDF['Date'] = pd.to_datetime(iTSDF['Date'])
+iSTDDF['Date'] = pd.to_datetime(iSTDDF['Date'])
 
+
+iCTSDF = iTSDF[['Date', 'Total Confirmed']]
+iRTSDF = iTSDF[['Date','Total Recovered']]
+iDTSDF = iTSDF[['Date','Total Deceased']]
+
+globalList=[gTSCDF, gTSRDF, gTSDDF, gCDF_country, gRDF_country, gDDF_country, gCDF_Day_Ind, gDDF_Day_Ind, gRDF_Day_Ind]
+indiaList=[iCDF1, iCDF2, iCDF3, iDRDF1, iDRDF2, iTSDF, iDISTDF, iCDF, iCDF31, iDRDF, iRDF, iDDF, iTSDF, iCTSDF, iRTSDF, iDTSDF]
 
 #--------------------------------------------------------------------------------------------------------------------
+opt1 = opt2 = opt3 = opt4 = opt5 = 0
+
+
 # Check command line arguments for analysis
 opt1 = opt2 = opt3 = opt4 = opt5 = 0
 if (((len(sys.argv) > 1) and (sys.argv[1] == '-h')) or (len(sys.argv) == 1)):
-    print("Command : python ./covid19Vega.py -o=opt1, opt2, opt3,... ")
+    print("Command : python ./covid19Vega.py -o opt1, opt2, opt3,... ")
     print(" opt1 : 0 | 1 to switch global Report from JHU Data ")
     print(" opt2 : 0 | 1 to switch Trend of Confirmed Global report from JHU Data. ")
     print(" opt3 : 0 | 1 to switch Trend of Deceased Global report from JHU Data.")
     print(" opt4 : 0 | 1 to switch Trend of Recovered Global report from JHU Data.")
     print(" opt5 : 0 | 1 to switch Study of Indian report from api.covid19india.org Data.")
+    
     if (len(sys.argv) == 1):
         print("....... Please run again with options.")
     print(" Code terminated without any further job.....")
@@ -368,11 +421,20 @@ if (len(sys.argv) > 1):
     cmdParser.add_argument('-o', type = str)
     cmdArguments = cmdParser.parse_args()
     optList = cmdArguments.o.split(',')
-    opt1 = int(optList[0])
-    opt2 = int(optList[1])
-    opt3 = int(optList[2])
-    opt4 = int(optList[3])
-    opt5 = int(optList[4])
+    
+if (int(optList[0]) >= 1):
+    opt1 = 1    
+if (int(optList[1]) >= 1):
+    opt2 = 1    
+if (int(optList[2]) >= 1):
+    opt3 = 1
+if (int(optList[3]) >= 1):
+    opt4 = 1    
+if (int(optList[4]) >= 1):
+    opt5 = 1 
+
+
+
 
 
 #----------------------------------------------------------------------------------------------------------------------------
@@ -388,9 +450,11 @@ if (opt1 == 1):
     myFig = plt.figure(figsize = (18, 7 * rows))
     for i, iCountry in enumerate(lCountries):
         visualize_covid_cases(gTSCDF, gTSDDF, country = iCountry, figure = [myFig, rows, cols, i + 1])
+    
     plt.savefig(out+'PLOT/Global_Report.png')    
     #plt.show()
-
+    plt.close()
+    globalList.append(gCDF_Countr)
 #------------------------------------------------------------------------------------------------------------------------
 # Trend comparison for Confirmed Cases
 if (opt2 == 1):
@@ -401,6 +465,8 @@ if (opt2 == 1):
     plotGlobalFig(gTSTMPC, threshold, "Confirmed" )  #, [myFig])  # figure = [myFig ])
     plt.savefig(out+'PLOT/Trend_Comparison_with_India_Confirmed_JHU-Data.png')
     #plt.show()
+    plt.close()
+    globalList.append(gTSTMPC)
 
 # Trend comparison for Deceased  Cases
 if (opt3 == 1):
@@ -411,6 +477,8 @@ if (opt3 == 1):
     plotGlobalFig(gTSTMPD, threshold, "Deceased")      #, figure = [myFig ])
     plt.savefig(out+'PLOT/Trend_Comparison_with_India_Deceased_JHU-Data.png')
     #plt.show()
+    plt.close()
+    globalList.append(gTSTMPD)
 
 # Trend comparison for Recovered  Cases
 if (opt4 == 1):
@@ -421,3 +489,159 @@ if (opt4 == 1):
     plotGlobalFig(gTSTMPR, threshold, "Recovered")          #, figure = [myFig ])
     plt.savefig(out+'PLOT/Trend_Comparison_with_India_Recovered_JHU-Data.png')
     #plt.show()
+    plt.close()
+    globalList.append(gTSTMPR)
+    
+#---------------------------------------------------------------------------------------------------------------
+# Analysis on India
+if (opt5 == 1):
+    print("India:-------->  ")
+    
+    # Part - 01 Data Comparison
+    f = plt.figure(figsize=(12, 9))
+    ax = f.add_subplot(111)
+
+    #------------------------- JHU Data
+    strLabelPlot1 = " Confirmed cases "
+    PlotFileName1 = "PLOT/Comparison_between_JHU_and_India_source_Confirmed_Cases_Data.png"
+    strLegendPlot1 = " JHU  Data"
+    strPlotTit1 = "Trend comparison between JHU and covid19org data "
+    gCI01 = gCDF_country.drop(["Lat", "Long"], axis = 1).sort_values(gTSCDF.columns[-1], ascending=False)
+    gCI01 = gCI01.query('Country == "India"')     
+    gCI01Cols = gCI01.columns.tolist()
+    glDates = len(gCI01Cols)
+    gCI01Vals = (gCI01.values.tolist())[0]
+    gDate0 = datetime.strptime(gCI01Cols[0], '%m/%d/%y')
+    gDate1 = datetime.strptime(gCI01Cols[glDates - 1], '%m/%d/%y')
+    gDateC = np.arange(0, glDates)
+    globalList.append(gCI01)
+    #------------------------ covid19org Indian data
+    strLabelPlot1 = " Confirmed cases "
+    strLegendPlot2 = " Indian Data "
+    ilDates = iCTSDF.shape[0]
+    iCcols = iCTSDF.columns.tolist()        
+    iDate0 = iCTSDF['Date'][0]   # datetime.strptime(iCTSDF['Date'][0],'%d %B %Y')
+    iDate1 = iCTSDF['Date'][ilDates-1]  # datetime.strptime(iCTSDF['Date'][ilDates-1],'%d %B %Y')    
+    # Here we are adding zero data for missed data at the begininng for indian data 
+    jColins = 0
+    for iCols in gCI01Cols:
+        cueDate = datetime.strptime(iCols, '%m/%d/%y')
+        # print (abs(cueDate - iDate0))
+        newRow = pd.DataFrame({'Date':cueDate, 'Total Confirmed':0}, index=[0])
+        if (cueDate == iDate0):
+            # print(cueDate, "   =====  ", iDate0)
+            break 
+        else:
+            if (jColins == 0):
+                iCTSDF = pd.concat([iCTSDF.iloc[:0], newRow, iCTSDF.iloc[0:]]).reset_index(drop=True)
+            else:
+                iCTSDF = pd.concat([iCTSDF.iloc[:jColins], newRow, iCTSDF.iloc[jColins:]]).reset_index(drop=True)            
+        jColins = jColins + 1    
+    
+    ilDates = iCTSDF.shape[0]    
+    iDate0 = iCTSDF['Date'][0]   # datetime.strptime(iCTSDF['Date'][0],'%d %B %Y')
+    iDate1 = iCTSDF['Date'][ilDates-1]  # datetime.strptime(iCTSDF['Date'][ilDates-1],'%d %B %Y')    
+
+    iCcols = iCTSDF.columns.tolist()    
+    iCTSVals = iCTSDF['Total Confirmed']
+    iDateC = np.arange(0, ilDates)
+
+    # get X and Y for the Global Data    
+    xnew = np.linspace(0, abs(gDate1 - gDate0).days, glDates)
+    yVals = make_interp_spline(gDateC, gCI01Vals, k = 1)   # default k = 3 for cubic
+    power_smooth = yVals(xnew)
+    plt.plot(gDateC, power_smooth, label = strLegendPlot1, linewidth = 1, marker = '1', markersize = 15)
+    
+    # get X and Y for the Indian Data
+    xnew = np.linspace(0, abs(iDate1 - iDate0).days, ilDates)
+    yVals = make_interp_spline(iDateC, iCTSVals, k = 1)   # default k = 3 for cubic
+    power_smooth = yVals(xnew)
+    plt.plot(iDateC, power_smooth, label = strLegendPlot2, linewidth = 1, marker = 'o', markersize = 4)
+        
+    
+    plt.xticks(np.arange(0, glDates, 7), ["Day " + str(i) for i in range(glDates)][::7])
+    plt.xticks(rotation=70)
+    plt.yscale("log")
+    plt.grid(which='both')
+    strLabelPlot1 = "Number of " + strLabelPlot1
+    plt.xlabel("Days", fontsize=14)
+    plt.ylabel(strLabelPlot1, fontsize=14)
+    plt.title(strPlotTit1, fontsize=16)
+    plt.text(50, 1.2, "Data taken from CSSEGIandData at John Hopkins U.", {'color':'g', 'fontsize':9, 'ha':'left','va':'center','bbox': dict(boxstyle="round", fc="white", ec="black", pad=0.2)})
+    plt.text(50, 0.85, "Analysis and plotting by  Abhijit Bhattacharyya, NPD, BARC", {'color':'r', 'fontsize':9, 'ha':'left','va':'center','bbox': dict(boxstyle="round", fc="white", ec="black", pad=0.2)})
+    plt.legend(loc=0)
+    #plt.savefig(out+PlotFileName1)
+    #plt.show()
+    plt.close()
+    
+# ---------------------------------------------------------------------------------------------------------------------
+# Indian Data Report
+    
+    
+    # India State Wise
+    iSTDCDF = iSTDDF.query('Status == "Confirmed"').reset_index(drop=True)
+    iSTDRDF = iSTDDF.query('Status == "Recovered"').reset_index(drop=True)
+    iSTDDDF = iSTDDF.query('Status == "Deceased"').reset_index(drop=True)
+    
+
+    iST1 = iSTDCDF.drop(['Date', 'Status'], axis=1)                
+    iST1Len = len(iST1)
+    yD = iST1.iloc[iST1Len -1]
+    yD1 = (yD[yD>20])
+    yD1Len = yD1.shape[0]
+    xx = []
+    yy = []    
+    for ii in np.arange(0, yD1Len):
+        yVal = yD1[ii]
+        iST = yD1[yD1 == yVal].index[0]        
+        xx.append(iST)
+        yy.append(yVal)
+    
+    thkness = 12.0 / yD1Len
+    f = plt.figure(figsize=(12, 8))
+    ax = plt.subplot(111)
+    plt.bar(xx, yy, width=thkness)
+    plt.xticks(rotation=70)
+    plt.savefig(out+"PLOT/States_of_India_Today.png")
+    #plt.show()
+    plt.close()
+
+
+    xx = []
+    yy = []
+    zz = []
+
+    
+    f = plt.figure(figsize=(12,8))
+    #ax = Axes3D(f, rect=[0,0.1,1,1])
+    ax = f.add_subplot(121, projection='3d')
+    width = depth = 1
+    ilastentry = iSTDCDF.shape[0]
+    colNames = iSTDCDF.columns.tolist()
+    for ii in np.arange(ilastentry - 6, ilastentry):
+        newRow = iSTDCDF.iloc[ii]
+        nRlen = len(newRow)
+        xx.append(newRow[[0]][0].date())        
+                        
+        for jj in np.arange(2, nRlen - 1):
+            tempX = newRow[[jj]].index[0]
+            tempY = newRow[[jj]][0]
+            if (tempY > 50):                
+                yy.append(tempX)
+                zz.append(tempY)
+        #ax.bar3d(xx, yy, 0, width, depth, zz, shade=True)
+        # dx = min((max(xx) - min(xx)) / len(xx), dx)        
+        # dy = min((max(yy) - min(yy)) / len(yy), dy)    
+    dx = (xx[1] - xx[0]).days
+    dy = 5
+    dz = 1
+    print("dx ", dx)
+    ax.bar3d(xx, yy, 0, dx, dy, zz, shade=True)
+    #plt.show()
+    
+    # Maharashtra Data
+    
+    # West Bengal Data
+    
+    
+    releaseMemory(globalList, indiaList)
