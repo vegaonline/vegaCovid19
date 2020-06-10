@@ -2021,6 +2021,7 @@ Entry_ID,State Patient Number,Date Announced,Age Bracket,Gender,Detected City,De
 2020,KA-P260,01/05/2020,,,,Uttara Kannada,Karnataka,KA,1,Recovered,,,https://twitter.com/DHFWKA/status/1256118731769552896,,,,,,29911
 2021,KA-P274,01/05/2020,,,,Kalaburagi,Karnataka,KA,1,Recovered,,,https://twitter.com/DHFWKA/status/1256118731769552896,,,,,,29912
 2022,KA-P304,01/05/2020,,,,Gadag,Karnataka,KA,1,Recovered,,,https://twitter.com/DHFWKA/status/1256118731769552896,,,,,,29913
+41018,KA-P466,27/04/2020,,,,Bengaluru Urban,Karnataka,KA,1,Migrated_Other,,,,,,,,,
 2023,,01/05/2020,,,,Anantapur,Andhra Pradesh,AP,1,Hospitalized,,,https://twitter.com/ArogyaAndhra/status/1256103664407597056,,,,,,29914
 2024,,01/05/2020,,,,Anantapur,Andhra Pradesh,AP,1,Hospitalized,,,https://twitter.com/ArogyaAndhra/status/1256103664407597056,,,,,,29915
 2025,,01/05/2020,,,,Anantapur,Andhra Pradesh,AP,1,Hospitalized,,,https://twitter.com/ArogyaAndhra/status/1256103664407597056,,,,,,29916
@@ -2632,7 +2633,7 @@ Entry_ID,State Patient Number,Date Announced,Age Bracket,Gender,Detected City,De
 2631,,01/05/2020,60,F,,Jajpur,Odisha,OR,1,Hospitalized,,Returned from Kolkata. Asymptomatic. Contacts of positive case,https://twitter.com/IPR_Odisha/status/1256392915166941185,,,,,,30522
 2632,,02/05/2020,,,,Ajmer,Rajasthan,RJ,1,Hospitalized,,,https://twitter.com/ANI/status/1256434600592564226,,,,,,30523
 2633,,02/05/2020,,,,Chittorgarh,Rajasthan,RJ,1,Hospitalized,,,https://twitter.com/ANI/status/1256434600592564226,,,,,,30524
-2634,,02/05/2020,,,,Dholpur,,,2,Hospitalized,,This entry was removed by the 2pm bulletin.,https://twitter.com/ANI/status/1256434600592564226,,,,,,30525
+2634,,02/05/2020,,,,Dholpur,Rajasthan,RJ,0,Hospitalized,,This entry was removed by the 2pm bulletin.,https://twitter.com/ANI/status/1256434600592564226,,,,,,30525
 2635,,02/05/2020,,,,Jaipur,Rajasthan,RJ,5,Hospitalized,,,https://twitter.com/ANI/status/1256434600592564226,,,,,,30526
 2636,,02/05/2020,,,,Jodhpur,Rajasthan,RJ,2,Hospitalized,,,https://twitter.com/ANI/status/1256434600592564226,,,,,,30527
 2637,,02/05/2020,,,,Kota,Rajasthan,RJ,1,Hospitalized,,,https://twitter.com/ANI/status/1256434600592564226,,,,,,30528
@@ -8832,8 +8833,8 @@ Entry_ID,State Patient Number,Date Announced,Age Bracket,Gender,Detected City,De
 8831,,08/05/2020,,,,Rajanna Sircilla,Telangana,TG,1,Recovered,,,https://twitter.com/TelanganaHealth/status/1258772508989198337,,,,,,36724
 8832,,08/05/2020,,,,Medak,Telangana,TG,1,Recovered,,,https://twitter.com/TelanganaHealth/status/1258772508989198337,,,,,,36725
 8833,,08/05/2020,,,,Jogulamba Gadwal,Telangana,TG,3,Recovered,,,https://twitter.com/TelanganaHealth/status/1258772508989198337,,,,,,36726
-8834,,08/05/2020,,,,,Maharashtra,MH,,Deceased,,,,,,,,,36727
-8835,,08/05/2020,,,,,Maharashtra,MH,,Hospitalized,,,,,,,,,36728
+8834,,08/05/2020,,,,,Maharashtra,MH,0,Deceased,,,,,,,,,36727
+8835,,08/05/2020,,,,,Maharashtra,MH,0,Hospitalized,,,,,,,,,36728
 8836,,08/05/2020,,,,Washim,Maharashtra,MH,-1,Recovered,,,,,,,,,36729
 8837,,08/05/2020,,,,Jhansi,Uttar Pradesh,UP,1,Deceased,,,https://t.me/indiacovid/4297,,,,,,36730
 8838,,08/05/2020,,,,Gautam Buddha Nagar,Uttar Pradesh,UP,1,Deceased,,,https://t.me/indiacovid/4297,,,,,,36731
@@ -10006,8 +10007,15 @@ Entry_ID,State Patient Number,Date Announced,Age Bracket,Gender,Detected City,De
 10005,,09/05/2020,,,,Ganjam,Odisha,OR,1,Hospitalized,,,https://twitter.com/ANI/status/1259300967498956800?s=09,,,,,,37898
 10006,,09/05/2020,,,,Mayurbhanj,Odisha,OR,1,Hospitalized,,,https://twitter.com/ANI/status/1259300967498956800?s=09,,,,,,37899
 10007,,09/05/2020,,,,Kamrup Metropolitan,Assam,AS,-1,Hospitalized,,Reconcilation With Assam Dashboard,https://covid19.assam.gov.in/all-districts/,,,,,,37912
-10008,,09/05/2020,,,,Kamrup Metropolitan,Assam,AS,,Deceased,,Reconcilation With Assam Dashboard,https://covid19.assam.gov.in/all-districts/,,,,,,37911
-,,27/04/2020,,,,Jalandhar,Punjab,PB,9,Hospitalized,,Correction for district count,,,,,,,
-,,27/04/2020,,,,,Punjab,PB,-9,Hospitalized,,Correction for district count,,,,,,,
-,,27/04/2020,,,,Ludhiana,Punjab,PB,1,Hospitalized,,Correction for district count,,,,,,,
-,,27/04/2020,,,,,Punjab,PB,-1,Hospitalized,,Correction for district count,,,,,,,
+10008,,09/05/2020,,,,Kamrup Metropolitan,Assam,AS,0,Deceased,,Reconcilation With Assam Dashboard,https://covid19.assam.gov.in/all-districts/,,,,,,37911
+43264,,27/04/2020,,,,Jalandhar,Punjab,PB,0,Hospitalized,,Correction for district count,,,,,,,
+43265,,27/04/2020,,,,,Punjab,PB,0,Hospitalized,,Correction for district count,,,,,,,
+43266,,27/04/2020,,,,Ludhiana,Punjab,PB,0,Hospitalized,,Correction for district count,,,,,,,
+43267,,27/04/2020,,,,,Punjab,PB,0,Hospitalized,,Correction for district count,,,,,,,
+43268,,27/04/2020,,,,Sonipat,Haryana,HR,-7,Recovered,,Reconciliation of extra entries created due to district name correction,,,,,,,
+43269,,27/04/2020,,,,,Haryana,HR,7,Recovered,,Reconciliation of extra entries created due to district name correction,,,,,,,
+43270,,27/04/2020,,,,Thoothukkudi,Tamil Nadu,TN,-1,Deceased,,,,,,,,,
+43271,,27/04/2020,,,,,Tamil Nadu,TN,1,Deceased,,,,,,,,,
+43272,,14/03/2020,,,,,Himachal Pradesh,HP,1,Migrated_Other,,Entry for reduction from Active,,,,,,,
+43273,,14/03/2020,,,,,Himachal Pradesh,HP,1,Migrated_Other,,Entry for reduction from Active,,,,,,,
+43274,,14/03/2020,,,,,Himachal Pradesh,HP,1,Migrated_Other,,Entry for reduction from Active,,,,,,,

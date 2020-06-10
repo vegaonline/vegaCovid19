@@ -9400,4 +9400,105 @@
     },
     "statecode": "WB"
   }
+}      "active": 103,
+        "confirmed": 166,
+        "deceased": 5,
+        "recovered": 58,
+        "delta": {
+          "confirmed": 10,
+          "deceased": 0,
+          "recovered": 2
+        }
+      },
+      "Uttar Dinajpur": {
+        "notes": "",
+        "active": 83,
+        "confirmed": 93,
+        "deceased": 0,
+        "recovered": 10,
+        "delta": {
+          "confirmed": 46,
+          "deceased": 0,
+          "recovered": 3
+        }
+      },
+      "Unknown": {
+        "notes": "",
+        "active": 17,
+        "confirmed": 17,
+        "deceased": 0,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      }
+    },
+    "statecode": "WB"
+  }
+}},
+      "Purba Bardhaman": {
+        "notes": "",
+        "active": 56,
+        "confirmed": 105,
+        "deceased": 0,
+        "recovered": 49,
+        "delta": {
+          "confirmed": 6,
+          "deceased": 0,
+          "recovered": 7
+        }
+      },
+      "Purba Medinipur": {
+        "notes": "",
+        "active": 70,
+        "confirmed": 117,
+        "deceased": 1,
+        "recovered": 46,
+        "delta": {
+          "confirmed": 3,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Purulia": {
+        "notes": "",
+        "active": 19,
+        "confirmed": 19,
+        "deceased": 0,
+        "recovered": 0,
+        "delta": {
+          "confirmed": 10,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "South 24 Parganas": {
+        "notes": "",
+        "active": 115,
+        "confirmed": 206,
+        "deceased": 7,
+        "recovered": 84,
+        "delta": {
+          "confirmed": 4,
+          "deceased": 1,
+          "recovered": 0
+        }
+      },
+      "Uttar Dinajpur": {
+        "notes": "",
+        "active": 18,
+        "confirmed": 166,
+        "deceased": 0,
+        "recovered": 148,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 118
+        }
+      }
+    },
+    "statecode": "WB"
+  }
 }

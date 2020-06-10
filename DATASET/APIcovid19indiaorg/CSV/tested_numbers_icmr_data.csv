@@ -16,7 +16,6 @@ Update Time Stamp,Total Samples Tested,Total Individuals Tested,Total Positive C
 25/03/2020 10:00:00,22928,22038,539,,,,ICMR_website_update_25March_10AM_IST.pdf,,2.35%,40.89,42.54,17
 25/03/2020 20:00:00,25144,24254,581,,,,ICMR_website_update_25March_8PM_IST.pdf,,2.31%,41.75,43.28,19
 26/03/2020 10:00:00,,,,,,,,,,,,0
-26/03/2020 18:00:00,,,,,,,,,,,,0
 27/03/2020 09:00:00,27688,26798,691,,,,ICMR_website_update_27March_9AM_IST.pdf,,2.50%,38.78,40.07,21
 30/03/2020 00:00:00,38442,,,1334,,,MoH Press conference with Dr. Raman G,,0.00%,,,29
 31/03/2020 00:00:00,42788,,,1733,,,MoH Press conference with Dr. Raman G,,0.00%,,,32
@@ -72,7 +71,23 @@ Update Time Stamp,Total Samples Tested,Total Individuals Tested,Total Positive C
 19/05/2020 09:00:00,2404267,,,,,,https://www.icmr.gov.in/pdf/covid/update/ICMR_testing_update_19May2020_9AM_IST.pdf,,,,,1804
 20/05/2020 09:00:00,2512388,,,,108121,,https://www.icmr.gov.in/pdf/covid/update/ICMR_testing_update_20May2020_9AM_IST.pdf,,,,,1885
 21/05/2020 09:00:00,2615920,,,,103532,,https://www.icmr.gov.in/pdf/covid/update/ICMR_testing_update_21May2020_9AM_IST.pdf,,,,,1963
-22/05/2020 09:00:00,2719434,,,,103514,,https://t.me/Covid19india_Auxiliary_Test_Data/99,,,,,
-23/05/2020 09:00:00,2834798,,,,115364,,https://t.me/Covid19india_Auxiliary_Test_Data/110,,,,,
-24/05/2020 09:00:00,2943421,,,,108623,,https://t.me/Covid19india_Auxiliary_Test_Data/129,,,,,
-25/05/2020 09:00:00,3033591,,,,90170,,https://t.me/Covid19india_Auxiliary_Test_Data/146,,,,,
+22/05/2020 09:00:00,2719434,,,,103514,,https://t.me/Covid19india_Auxiliary_Test_Data/99,,,,,2040
+23/05/2020 09:00:00,2834798,,,,115364,,https://t.me/Covid19india_Auxiliary_Test_Data/110,,,,,2127
+24/05/2020 09:00:00,2943421,,,,108623,,https://t.me/Covid19india_Auxiliary_Test_Data/129,,,,,2208
+25/05/2020 09:00:00,3033591,,,,90170,,https://t.me/Covid19india_Auxiliary_Test_Data/146,,,,,2276
+26/05/2020 09:00:00,3126119,,,,92528,,https://t.me/Covid19india_Auxiliary_Test_Data/160,,,,,2345
+27/05/2020 09:00:00,3242160,,,,116041,,https://t.me/Covid19india_Auxiliary_Test_Data/177,,,,,2432
+28/05/2020 09:00:00,3362136,,,,119976,,https://t.me/Covid19india_Auxiliary_Test_Data/194,,,,,2522
+29/05/2020 09:00:00,3483838,,,,121702,,https://t.me/Covid19india_Auxiliary_Test_Data/211,,,,,2614
+30/05/2020 09:00:00,3611599,,,,127761,,https://t.me/Covid19india_Auxiliary_Test_Data/228,,,,,2710
+31/05/2020 09:00:00,3737027,,,,125428,,https://t.me/Covid19india_Auxiliary_Test_Data/236,,,,,2804
+01/06/2020 09:00:00,3837207,,,,100180,,https://t.me/Covid19india_Auxiliary_Test_Data/253,,,,,2879
+02/06/2020 09:00:00,3966075,,,,128868,,https://twitter.com/ICMRDELHI/status/1267665101781266433?s=20,,,,,2976
+03/06/2020 09:00:00,4103233,,,,137158,,https://twitter.com/ICMRDELHI/status/1268030064467165184?s=19,,,,,3078
+04/06/2020 09:00:00,4242718,,,,139485,,https://t.me/Covid19india_Auxiliary_Test_Data/294,,,,,3183
+05/06/2020 09:00:00,4386379,,,,143661,,https://t.me/Covid19india_Auxiliary_Test_Data/313,,,,,3291
+06/06/2020 09:00:00,4524317,,,,137938,,https://twitter.com/ICMRDELHI/status/1269111826618302464?s=19,,,,,3394
+07/06/2020 09:00:00,4666386,,,,142069,,https://t.me/Covid19india_Auxiliary_Test_Data/340,,,,,3501
+08/06/2020 09:00:00,4774434,,,,108048,,https://t.me/Covid19india_Auxiliary_Test_Data/355,,,,,3582
+09/06/2020 09:00:00,4916116,,,,141682,,https://t.me/Covid19india_Auxiliary_Test_Data/374,,,,,
+10/06/2020 09:00:00,5061332,,,,145216,,https://t.me/Covid19india_Auxiliary_Test_Data/388,,,,,
