@@ -3,6 +3,8 @@ mv *.csv OLDCSV/
 wget -c https://api.covid19india.org/csv/latest/raw_data1.csv
 wget -c https://api.covid19india.org/csv/latest/raw_data2.csv
 wget -c https://api.covid19india.org/csv/latest/raw_data3.csv
+wget -c https://api.covid19india.org/csv/latest/raw_data4.csv
+wget -c https://api.covid19india.org/csv/latest/raw_data5.csv
 wget -c https://api.covid19india.org/csv/latest/death_and_recovered1.csv
 wget -c https://api.covid19india.org/csv/latest/death_and_recovered2.csv
 wget -c https://api.covid19india.org/csv/latest/state_wise.csv 
