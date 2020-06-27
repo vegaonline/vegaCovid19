@@ -9501,4 +9501,53 @@
     },
     "statecode": "WB"
   }
+} }
+      },
+      "South 24 Parganas": {
+        "notes": "",
+        "active": 315,
+        "confirmed": 526,
+        "deceased": 17,
+        "recovered": 194,
+        "delta": {
+          "confirmed": 29,
+          "deceased": 1,
+          "recovered": 11
+        }
+      },
+      "Uttar Dinajpur": {
+        "notes": "",
+        "active": 24,
+        "confirmed": 228,
+        "deceased": 0,
+        "recovered": 204,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      }
+    },
+    "statecode": "WB"
+  }
+}": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      },
+      "Uttar Dinajpur": {
+        "notes": "",
+        "active": 24,
+        "confirmed": 228,
+        "deceased": 0,
+        "recovered": 204,
+        "delta": {
+          "confirmed": 0,
+          "deceased": 0,
+          "recovered": 0
+        }
+      }
+    },
+    "statecode": "WB"
+  }
 }

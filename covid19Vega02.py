@@ -38,11 +38,14 @@ from scipy.interpolate import make_interp_spline, BSpline
 import weasyprint as wsp
 import PIL as pil
 import docx
-
+from docx.enum.section import WD_SECTION
+from docx.enum.section import WD_ORIENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
+from plotly.subplots import make_subplots
 import cufflinks as cf
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 pio.templates.default = "xgridoff"
@@ -55,6 +58,14 @@ from keras.layers import Input, Dense, Activation, LeakyReLU
 from keras import models
 from keras.optimizers import RMSprop, Adam
 
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.arima_model import ARIMA
+from random import random
+from tqdm import tqdm
+
+from sklearn import preprocessing
+from sklearn.model_selection import KFold
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -63,75 +74,157 @@ warnings.filterwarnings('ignore')
 out = ""#+"output/"
 cmdParser = argparse.ArgumentParser() 
 
+def RMSLE(pred, actual):
+    return np.sqrt(np.mean(np.power((np.log(pred + 1) - np.log(actual + 1)), 2)))
+
+def _convert_date_str(df):
+    try:
+        df.columns = list(df.columns[:4]) + [datetime.strptime(d, "%m/%d/%y").date().strftime("%Y-%m-%d") for d in df.columns[4:]]
+    except:
+        print('_convert_date_str failed with %y, try %Y')
+        df.columns = list(df.columns[:4]) + [datetime.strptime(d, "%m/%d/%Y").date().strftime("%Y-%m-%d") for d in df.columns[4:]]
+
+
+# ----------- ------------------------- Write a Document
+def makeDoc(thisDF, docHead, fName):
+    # myDoc = docx.Document(docFName)   # to read old file
+    myDoc = docx.Document()             # to create new file
+    myDoc.core_properties.author = 'Abhijit Bhattacharyya'
+    myDoc.core_properties.owner = 'Abhijit Bhattacharyya'
+    myDoc.core_properties.title = docHead
+    thisDF.reset_index(drop=False, inplace=True)
+    #myDoc.add_heading('  ',2)
+    
+    currSection = myDoc.sections[-1]
+   # currSection.orientation = WD_ORIENT.LANDSCAPE
+    currSection.orientation = WD_ORIENT.PORTRAIT
+    
+    myDocHead = myDoc.add_heading(docHead,0)
+    myDocHead.bold = True
+    #myDocHead.underline = True
+    tt = myDoc.add_table(thisDF.shape[0] + 1, thisDF.shape[1])   # row, col
+    tt.style = 'LightShading-Accent1'
+    tt.autofit = False
+
+    for j in range(thisDF.shape[-1]):
+        tt.cell(0, j).text = thisDF.columns[j]      # header
+    
+# cell width in EMU i.e. 1 inch = 914400 EMU.
+        
+    for i in range(thisDF.shape[0]):        
+        for j in range(thisDF.shape[-1]):                                            
+            tt.cell(i+1, j).text = str(thisDF.values[i, j])  # rest part of the dataframe
+        tt.cell(i+1, 0).width =  2560320            
+        tt.cell(i+1, 1).width =  4105656            
+        tt.cell(i+1, 2).width =  5678424            
+        tt.cell(i+1, 3).width =  7397496            
+        tt.cell(i+1, 4).width =  9509760            
+        tt.cell(i+1, 5).width =  11420856
+        
+    myDoc.save(fName)
+    # Working
+
+
 #------------ -------------------------  Plot Global Figures 
 def plotGlobalGig(thisDF, threshold = None, gType = None, getCNF = False, nCNFIndia = None):
-    f = plt.figure(figsize = (12, 10))
+    f = plt.figure(figsize = (20, 12))
     ax = f.add_subplot(111)
     
     dateList = thisDF.columns.tolist()
-    xList = [(dt.datetime.strptime(d, '%m/%d/%y').date()) for d in dateList]
-    
-    for ii, Country in enumerate(thisDF.index):
+    #xList = [(dt.datetime.strptime(d, '%m/%d/%y').date()) for d in dateList]
+    xList = dateList
+    colorList = ['crimson', 'orange', 'tomato', 'moccasin', 'darkviolet', 'lightseagreen', 
+                 'plum','steelblue', 'navy', 'palegreen', 'forestgreen', 'limegreen'
+                 ]
+    jColor = 0
+    for ii, Country in enumerate(thisDF.index):        
         if (ii > 9):
             if (Country != 'India' and Country != 'China'):
                 continue
         
         gT1 = thisDF.loc[thisDF.index == Country].values[0]
-        date0 = ((thisDF.loc[thisDF.index == Country]) > threshold).idxmax(axis=1)[0]
-        date0 = dt.datetime.strptime(date0, '%m/%d/%y').date()        
-        posDate0 = pd.Index(xList).get_loc(date0)
-                                
-        gT1 = gT1[gT1 > threshold]
-
         if (getCNF == True):
             if Country != "India":
                 continue
             else:
                 return gT1[-1]
+        date0 = ((thisDF.loc[thisDF.index == Country]) > threshold).idxmax(axis=1)[0]
+        # date0 = dt.datetime.strptime(date0, '%m/%d/%y').date()        
+        posDate0 = pd.Index(xList).get_loc(date0)
+                                
         xnew = xList[posDate0:]
+        gT1 = gT1[gT1 > threshold]
         yVals = gT1
-
         
         if (getCNF == False):
             percentage = f"  ( {((gT1[-1] / nCNFIndia) ): .2%})"
         if (gType == "Confirmed"):
-            testCountry = Country + ": " + str(gT1[-1])
+            testCountry = str(ii+1) + "  " + Country + ": " + str(gT1[-1])
         else:
             if (Country == 'India'):
-                testCountry = Country + ": " + str(gT1[-1]) + percentage
+                testCountry = str(ii+1) + " " + Country + ": " + str(gT1[-1]) + percentage
             else:
-                testCountry = Country + ": " + str(gT1[-1])
+                testCountry = str(ii +1) + "  " + Country + ": " + str(gT1[-1])
         
+
+        strTitle = "Trend comparison of some countries with India for " + gType + " cases with threshold " + str(threshold)
+        strYlab = "Number of " + gType + " cases"            
+                
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%Y'))
         plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval = 7))
-        
+        plt.gcf().autofmt_xdate()
+                
         if (Country != 'India'):
-            plt.plot(xnew, yVals, '-o', label = testCountry, linewidth = 3, markevery = [-1])
+            plt.plot(xnew, yVals, '-o', color = colorList[jColor], label = testCountry, linewidth = 3, markevery = [-1])
         else:
-            marker_style = dict(linewidth = 3, linestyle = '-', marker = 'o', markersize = 8, markerfacecolor = '#ffffff')
+            marker_style = dict(linewidth = 3, linestyle = '-', marker = 'o', markersize = 8, markerfacecolor = colorList[jColor]) #markerfacecolor = '#ffffff')
             plt.plot(xnew, yVals, "-.", label = testCountry, **marker_style)
-            
-        plt.gcf().autofmt_xdate()        
+        jColor += 1    
+        
+
+                
         plt.xticks(rotation=70)
+        plt.yscale("log")
+        plt.xlabel("Date", fontsize = 17)
+        plt.ylabel(strYlab, fontsize = 17)
+        plt.title(strTitle, fontsize = 15)        
+        plt.legend(loc = 0)
+        plt.grid(which="both")        
         
         # reference lines
-        #days = len(dateList)
-        x = [xList[0] + timedelta(days = xValue) for xValue in range (130)]
-        y = 2**((x[0] - xi).dt.days.astype(int) / 7 + np.log2(threshold) for xi in x)
-        #xList0pos = pd.Index(xList).get_loc(xd[-1]) 
-        #x = np.arange(0, xList0pos)
-        #y = 2**(20 / 7 + np.log2(threshold))
+        # ------------------------   reference for case doubling every day
+        print(xList) #, "   ", xList[0]+timedelta(5))
+        exit(0)
+        
+        x = [xList[0] + timedelta(days = xValue) for xValue in range (21)]
+        xd = [(xi - x[0]).days for xi in x]
+        y = [2**(xdi + np.log2(threshold)) for xdi in xd]
         plt.plot(x, y, "--", linewidth = 2, color="gray")
+        plt.annotate("Doubling every day", (x[-21], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
         
-        plt.legend(loc = 0)
-        plt.yscale("log")
-        plt.grid(which="both")
+        # ------------------------   reference for case doubling every 4th day
+        x = [xList[0] + timedelta(days = xValue) for xValue in range (80)]
+        xd = [(xi - x[0]).days for xi in x]
+        y = [2**(xdi / 4 + np.log2(threshold)) for xdi in xd]
+        plt.plot(x, y, "--", linewidth = 2, color="gray")
+        plt.annotate("Doubling every 4th day", (x[-25], y[-1]), xycoords = "data", fontsize = 12, alpha = 0.5)
+   
+        # ------------------------   reference for case doubling every week
+        x = [xList[0] + timedelta(days = xValue) for xValue in range (123)]
+        xd = [(xi - x[0]).days for xi in x]
+        y = [2**(xdi / 7 + np.log2(threshold)) for xdi in xd]
+        plt.plot(x, y, "--", linewidth = 2, color="red")
+        plt.annotate("Doubling every week", (x[-20], y[-1]), color="red", xycoords = "data", fontsize = 12, alpha = 0.5)
+   
+        # ------------------------   reference for case doubling every fortnight
+        x = [xList[0] + timedelta(days = xValue) for xValue in range (130)]
+        xd = [(xi - x[0]).days for xi in x]
+        y = [2**(xdi / 14 + np.log2(threshold)) for xdi in xd]
+        plt.plot(x, y, "--", linewidth = 2, color="red")
+        plt.annotate("Doubling every fortnight", (x[-20], y[-1]), color="red", xycoords = "data", fontsize = 12, alpha = 0.5)
         
         
-    
-    
-
-
+        
 #------------------------------- Get World Data over Net starts 
 def getDataOverNet():
     print("\n You have chosen to download the latest Data from the internet....\n")
@@ -234,7 +327,7 @@ df_testing1 = df_worldinfor1.drop(['Total Cases','New Cases','Total Deaths','New
 df_testingS1 = df_testing1.sort_values('Tests/1M pop', ascending=False)
 #print(tabulate(df_testingS1, headers = df_testingS1.columns.tolist(), tablefmt='psql'))
 
-fig = plt.figure(figsize=(22,18))
+fig = plt.figure(figsize=(15, 11))
 fig.add_subplot(111)
 #plt.axes(axisbelow=True)
 #plt.barh(df_testingS1.sort_values('Tests/1M pop')["Tests/1M pop"].index[-50:], 
@@ -271,31 +364,10 @@ df_testing2.style.background_gradient(cmap='Blues',subset=["Total Test"])\
 
 #print(tabulate(df_testing2, headers = df_testing2.columns.tolist(), tablefmt='psql'))
 
-"""
+myDocHead = 'Country-wise tests and mortality report'
 docFName = 'PLOT/code2/mortalityTable.docx'
-nCol = len(df_testing2.columns.tolist())
-# myDoc = docx.Document(docFName)   # to read old file
-myDoc = docx.Document()             # to create new file
+#  makeDoc(df_testing2, myDocHead, docFName)    ## WORKING
 
-df_testing2.reset_index(drop=False, inplace=True)
-
-myDocHead = myDoc.add_heading('Country-wise tests and mortality report \n',1)
-#myDoc.add_heading('  ',2)
-myDocHead.bold = True
-myDocHead.underline = True
-
-tt = myDoc.add_table(df_testing2.shape[0] + 1, df_testing2.shape[1])   # row, col
-tt.style = 'LightShading-Accent1'
-
-for j in range(df_testing2.shape[-1]):
-    tt.cell(0, j).text = df_testing2.columns[j]      # header
-
-for i in range(df_testing2.shape[0]):
-    for j in range(df_testing2.shape[-1]):
-        tt.cell(i+1, j).text = str(df_testing2.values[i, j])  # rest part of the dataframe
-        
-myDoc.save(docFName)
-"""   # Working
 #------------------------------------------------------------------------------------------
 #----------------------- JHU DATA --------------------------------------------
 JHUconfirmed = pd.read_csv(
@@ -313,22 +385,41 @@ JHUrecovered = pd.read_csv(
     parse_dates=True, index_col=None
     )
 
-JHUconfirmed = JHUconfirmed.rename(columns={"Province/State":"state", "Country/Region":"Country"})
-JHUdeaths = JHUdeaths.rename(columns={"Province/State":"state", "Country/Region":"Country"})
-JHUrecovered = JHUrecovered.rename(columns={"Province/State":"state", "Country/Region":"Country"}) 
 
-JHUconfirmed1=pd.melt(JHUconfirmed,id_vars=['state','Country','Lat','Long'],var_name='date', value_name='Confirmed')
+_convert_date_str(JHUconfirmed)
+_convert_date_str(JHUdeaths)
+_convert_date_str(JHUrecovered)
+
+
+JHUconfirmed.replace(np.nan,'', regex=True)
+JHUdeaths.replace(np.nan,'', regex=True)
+JHUrecovered.replace(np.nan,'', regex=True)
+
+JHUconfirmed = JHUconfirmed.rename(columns={"Province/State":"State", "Country/Region":"Country"}) #, inplace=True)
+JHUdeaths = JHUdeaths.rename(columns={"Province/State":"State", "Country/Region":"Country"})       #, inplace=True)
+JHUrecovered = JHUrecovered.rename(columns={"Province/State":"State", "Country/Region":"Country"}) #, inplace=True) 
+
+#JHUconfirmed = JHUconfirmed[~JHUconfirmed]
+
+
+JHUconfirmed1=pd.melt(JHUconfirmed,id_vars=['State','Country','Lat','Long'],var_name='date', value_name='Confirmed')
 JHUconfirmed1['date'] = JHUconfirmed1['date'].astype('datetime64[ns]') 
 JHUconfirmed1.sort_values(by="date")
 
-JHUdeaths1=pd.melt(JHUdeaths,id_vars=['state','Country','Lat','Long'],var_name='date', value_name='Deceased')
+JHUdeaths1=pd.melt(JHUdeaths,id_vars=['State','Country','Lat','Long'],var_name='date', value_name='Deceased')
 JHUdeaths1['date'] = JHUdeaths1['date'].astype('datetime64[ns]') 
 JHUdeaths1.sort_values(by="date")
 
-JHUrecovered1=pd.melt(JHUrecovered,id_vars=['state','Country','Lat','Long'],var_name='date', value_name='Recovered')
+JHUrecovered1=pd.melt(JHUrecovered,id_vars=['State','Country','Lat','Long'],var_name='date', value_name='Recovered')
 JHUrecovered1['date'] = JHUrecovered1['date'].astype('datetime64[ns]') 
 JHUrecovered1.sort_values(by="date")
 
+
+#JHUActive = JHUconfirmed - JHUdeaths - JHUrecovered
+#JHUActive1 = JHUconfirmed1 - JHUdeaths1 - JHUrecovered1
+# print(JHUconfirmed.shape,'   ', JHUdeaths.shape,'  ', JHUrecovered.shape)
+
+#JHUAC = JHUActive.groupby(['Country']).sum()
 JHUCC = JHUconfirmed.groupby(['Country']).sum()
 JHUDC = JHUdeaths.groupby(['Country']).sum()
 JHURC = JHUrecovered.groupby(['Country']).sum()
@@ -388,9 +479,37 @@ iRaw = iRaw11.append(iRaw31)
 iCTS['Date'] = pd.to_datetime(iCTS['Date'])
 iStateD['Date'] = pd.to_datetime(iStateD['Date']) 
 
-# Trend confirmed cases globally (JHU data)
+# Trend for confirmed cases globally (JHU data)
+threshold = 100
 JHUCC1 = JHUCC.drop(["Lat", "Long"], axis=1).sort_values(JHUconfirmed.columns[-1], ascending=False)
-threshold = 50
-plotGlobalGig(JHUCC1, threshold, "Confirmed", getCNF = False, nCNFIndia = 0)
+plotGlobalGig(JHUCC1, threshold, "Confirmed", False, 0)
 plt.savefig(out+'PLOT/code2/Global_Trend_Confirmed.png')
 plt.show()
+plt.close()
+
+# Trend for Recovered cases globally (JHU data)
+JHURC1 = JHURC.drop(["Lat", "Long"], axis=1).sort_values(JHUrecovered.columns[-1], ascending=False)
+totConf = plotGlobalGig(JHUCC1, threshold, "Confirmed", True, 0)  # get total confirmed for % calc
+plotGlobalGig(JHURC1, threshold, "Recovered", False, totConf)
+plt.savefig(out+'PLOT/code2/Global_Trend_Recovered.png')
+plt.show()
+plt.close()
+
+# Trend for Deceased cases globally (JHU data)
+JHUDC1 = JHUDC.drop(["Lat", "Long"], axis=1).sort_values(JHUdeaths.columns[-1], ascending=False)
+totConf = plotGlobalGig(JHUCC1, threshold, "Confirmed", True, 0)  # get total confirmed for % calc
+plotGlobalGig(JHUDC1, threshold, "Deceased", False, totConf)
+plt.savefig(out+'PLOT/code2/Global_Trend_Deceased.png')
+plt.show()
+plt.close()
+
+###########################################################################################
+###########################################################################################
+###########################################################################################
+#----------------------- Data for Kaggle competition --------------------------------------
+kTrainData = pd.read_csv('Kaggle_Global_Forecast/train.csv', parse_dates = ['Date'])
+print(kTrainData.head())
+print(kTrainData.info())
+kTestData = pd.read_csv('Kaggle_Global_Forecast/test.csv', parse_dates = ['Date'])
+print(kTestData.head())
+print(kTestData.info())

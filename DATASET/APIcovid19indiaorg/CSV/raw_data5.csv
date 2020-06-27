@@ -1975,7 +1975,7 @@ Entry_ID,State Patient Number,Date Announced,Age Bracket,Gender,Detected City,De
 30192,KA-P855,25/05/2020,,,,Bagalkote,Karnataka,KA,1,Recovered,,,https://t.me/indiacovid/5494,https://twitter.com/DHFWKA/status/1264898639433875457,,,,,59128
 30193,KA-P982,25/05/2020,,,,Mandya,Karnataka,KA,1,Recovered,,,https://t.me/indiacovid/5494,https://twitter.com/DHFWKA/status/1264898639433875457,,,,,59129
 30194,KA-P1686,25/05/2020,55,F,,Bengaluru Rural,Karnataka,KA,1,Deceased,,SARI,https://t.me/indiacovid/5494,https://twitter.com/DHFWKA/status/1264898639433875457,,,,,59130
-30195,KA-P2175,25/05/2020,43,M,,Dakshina Kannada,Karnataka,KA,1,Deceased,,Cirrhosis of liver,https://t.me/indiacovid/5494,https://twitter.com/DHFWKA/status/1264898639433875457,,,,,59131
+30195,KA-P2175,25/05/2020,43,M,,Dakshina Kannada,Karnataka,KA,1,Migrated_Other,,Cirrhosis of liver,https://t.me/indiacovid/5494,https://twitter.com/DHFWKA/status/1264898639433875457,,,,,59131
 30196,,25/05/2020,,,,Kargil,Ladakh,LA,1,Hospitalized,,,https://twitter.com/ladags/status/1264891984352735233,,,,,,59132
 30197,,25/05/2020,,,,Hisar,Haryana,HR,1,Hospitalized,,,http://www.nhmharyana.gov.in/WriteReadData/userfiles/file/CoronaVirus/Daily%20Bulletin%20of%20COVID%2019%20as%20on%2025-05-2020%20Morning.pdf,,,,,,59133
 30198,,25/05/2020,,,,Faridabad,Haryana,HR,1,Hospitalized,,,http://www.nhmharyana.gov.in/WriteReadData/userfiles/file/CoronaVirus/Daily%20Bulletin%20of%20COVID%2019%20as%20on%2025-05-2020%20Morning.pdf,,,,,,59134
@@ -4940,7 +4940,7 @@ Entry_ID,State Patient Number,Date Announced,Age Bracket,Gender,Detected City,De
 33158,,26/05/2020,,,,Darrang,Assam,AS,2,Hospitalized,,,https://twitter.com/himantabiswa/status/1265347928979202048,,,,,,62094
 33159,,26/05/2020,,,,Kamrup Metropolitan,Assam,AS,1,Hospitalized,,,https://twitter.com/himantabiswa/status/1265347928979202048,,,,,,62095
 33160,,26/05/2020,,,,Kamrup,Assam,AS,1,Hospitalized,,,https://twitter.com/himantabiswa/status/1265347928979202048,,,,,,62096
-33161,,26/05/2020,,,,,Meghalaya,ML,5,Hospitalized,,Travelled from Delhi-Haryana,https://twitter.com/SangmaConrad/status/1265353786773639168,,,,,,62097
+33161,,26/05/2020,,,,East Khasi Hills,Meghalaya,ML,5,Hospitalized,,Travelled from Delhi-Haryana,https://twitter.com/SangmaConrad/status/1265353786773639168,https://twitter.com/SangmaConrad/status/1265353786773639168?s=19,,,,,62097
 33168,,26/05/2020,,,,,Tripura,TR,18,Hospitalized,,Travelled from Maharashtra by train,https://twitter.com/BjpBiplab/status/1265335775480217606,,,,,,62104
 33169,,26/05/2020,,,,,Tripura,TR,5,Hospitalized,,Contacts of positive cases,https://twitter.com/BjpBiplab/status/1265335775480217606,,,,,,62105
 34371,,26/05/2020,,,,Chennai,Tamil Nadu,TN,-1,Hospitalized,,*2 deaths cross notified to other states. #1 patient died after turning negative for infection,https://stopcorona.tn.gov.in/wp-content/uploads/2020/03/Media-Bulletin-27-05-20-COVID-19-6-PM.pdf,,,,,,63307
@@ -8951,7 +8951,7 @@ Maharashtra",https://t.me/Karnataka_KoViD19_Broadcast/3670,,,,,,63882
 37090,KA-P2045,29/05/2020,,,,Udupi,Karnataka,KA,1,Recovered,,,https://twitter.com/DHFWKA/status/1266343452779745280,,,,,,66026
 37091,KA-P2167,29/05/2020,,,,Udupi,Karnataka,KA,1,Recovered,,,https://twitter.com/DHFWKA/status/1266343452779745280,,,,,,66027
 37092,KA-P792,29/05/2020,,,,Tumakuru,Karnataka,KA,1,Recovered,,,https://twitter.com/DHFWKA/status/1266343452779745280,,,,,,66028
-37093,KA-P2762,29/05/2020,50,F,,Chikkaballapura,Karnataka,KA,1,Deceased,,"case of RTA Head Injury on 24.05.2020 was admitted to Private hospital on 24.05.2020 and because of acute kidney injury and   pneumonia   patient   was   shifted   to   Designated   hospital, Bengaluru Urban on 28.05.2020 and tested positive for Covid-19. Died on 29.05.2020.",https://twitter.com/DHFWKA/status/1266343452779745280,,,,,,66029
+37093,KA-P2762,29/05/2020,50,F,,Chikkaballapura,Karnataka,KA,1,Migrated_Other,,"case of RTA Head Injury on 24.05.2020 was admitted to Private hospital on 24.05.2020 and because of acute kidney injury and   pneumonia   patient   was   shifted   to   Designated   hospital, Bengaluru Urban on 28.05.2020 and tested positive for Covid-19. Died on 29.05.2020.",https://twitter.com/DHFWKA/status/1266343452779745280,,,,,,66029
 37095,,29/05/2020,38,M,,Ariyalur,Tamil Nadu,TN,1,Hospitalized,,,https://stopcorona.tn.gov.in/wp-content/uploads/2020/03/Media-Bulletin-29.05.2020.pdf,,,,,,66031
 37096,,29/05/2020,24,M,,Ariyalur,Tamil Nadu,TN,1,Hospitalized,,,https://stopcorona.tn.gov.in/wp-content/uploads/2020/03/Media-Bulletin-29.05.2020.pdf,,,,,,66032
 37097,,29/05/2020,31,M,,Ariyalur,Tamil Nadu,TN,1,Hospitalized,,,https://stopcorona.tn.gov.in/wp-content/uploads/2020/03/Media-Bulletin-29.05.2020.pdf,,,,,,66033

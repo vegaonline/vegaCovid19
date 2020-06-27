@@ -1,4 +1,6 @@
 PLOT
 .spyproject
 DATASET/APIcovid19indiaorg/CSV/OLDCSV
+DATASET/APIcovid19indiaorg/CSV/*.csv
+DATASET/APIcovid19indiaorg/JSON/*.json
 
